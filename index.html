@@ -101,162 +101,175 @@
     </footer>
 
     <script>
-        lucide.createIcons();
+lucide.createIcons();
 
-        const searchForm = document.getElementById('searchForm');
-        const searchInput = document.getElementById('searchInput');
-        const statusMessage = document.getElementById('statusMessage');
-        const resultContainer = document.getElementById('resultContainer');
-        const wordTitle = document.getElementById('wordTitle');
-        const phoneticText = document.getElementById('phoneticText');
-        const audioBtn = document.getElementById('audioBtn');
-        const definitionsList = document.getElementById('definitionsList');
-        const synonymsList = document.getElementById('synonymsList');
-        const antonymsList = document.getElementById('antonymsList');
+const searchForm = document.getElementById('searchForm');
+const searchInput = document.getElementById('searchInput');
+const statusMessage = document.getElementById('statusMessage');
+const resultContainer = document.getElementById('resultContainer');
+const wordTitle = document.getElementById('wordTitle');
+const phoneticText = document.getElementById('phoneticText');
+const audioBtn = document.getElementById('audioBtn');
+const definitionsList = document.getElementById('definitionsList');
+const synonymsList = document.getElementById('synonymsList');
+const antonymsList = document.getElementById('antonymsList');
 
-        let currentAudioUrl = '';
+let currentAudioUrl = '';
 
-        searchForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const query = searchInput.value.trim().toLowerCase();
-            if (query) performSearch(query);
-        });
+searchForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const query = searchInput.value.trim().toLowerCase();
+    if (query) performSearch(query);
+});
 
-        async function performSearch(word) {
-            statusMessage.classList.remove('hidden');
-            statusMessage.innerHTML = 'Searching dictionary...';
-            resultContainer.classList.add('hidden');
-            
-            try {
-                const [dictRes, synRes, antRes] = await Promise.all([
-                    fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`),
-                    fetch(`https://api.datamuse.com/words?rel_syn=${encodeURIComponent(word)}`),
-                    fetch(`https://api.datamuse.com/words?rel_ant=${encodeURIComponent(word)}`)
-                ]);
+async function performSearch(word) {
+    statusMessage.classList.remove('hidden');
+    statusMessage.innerHTML = 'Searching dictionary...';
+    resultContainer.classList.add('hidden');
+    
+    try {
+        const [dictRes, synRes, antRes] = await Promise.all([
+            fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`),
+            fetch(`https://api.datamuse.com/words?rel_syn=${encodeURIComponent(word)}`),
+            fetch(`https://api.datamuse.com/words?rel_ant=${encodeURIComponent(word)}`)
+        ]);
 
-                const dictData = dictRes.ok ? await dictRes.json() : null;
-                const synData = synRes.ok ? await synRes.json() : [];
-                const antData = antRes.ok ? await antRes.json() : [];
+        const dictData = dictRes.ok ? await dictRes.json() : null;
+        const synData = synRes.ok ? await synRes.json() : [];
+        const antData = antRes.ok ? await antRes.json() : [];
 
-                if (!dictData && synData.length === 0 && antData.length === 0) {
-                    statusMessage.innerHTML = `No results found for "<strong>${word}</strong>". Please try another word.`;
-                    return;
-                }
-
-                displayResults(word, dictData ? dictData[0] : null, synData, antData);
-                statusMessage.classList.add('hidden');
-                resultContainer.classList.remove('hidden');
-
-            } catch (err) {
-                statusMessage.innerHTML = 'Error loading results. Please check your internet connection.';
-                console.error(err);
-            }
+        if (!dictData && synData.length === 0 && antData.length === 0) {
+            statusMessage.innerHTML = `No results found for "<strong>${word}</strong>". Please try another word.`;
+            return;
         }
 
-        function displayResults(word, entry, syns, ants) {
-            wordTitle.textContent = word;
+        displayResults(word, dictData ? dictData[0] : null, synData, antData);
+        statusMessage.classList.add('hidden');
+        resultContainer.classList.remove('hidden');
 
-            // Phonetics & Audio
-            phoneticText.textContent = '';
-            audioBtn.classList.add('hidden');
-            currentAudioUrl = '';
-if (entry) {
-    if (entry.phonetic) {
-        phoneticText.textContent = entry.phonetic;
-    } else if (entry.phonetics && entry.phonetics.length) {
-        const p = entry.phonetics.find(item => item.text);
-        if (p) phoneticText.textContent = p.text;
+    } catch (err) {
+        statusMessage.innerHTML = 'Error loading results. Please check your internet connection.';
+        console.error(err);
     }
-
-    // Look for a recorded audio file, but always show the Listen button
-    if (entry.phonetics && entry.phonetics.length) {
-        const audioObj = entry.phonetics.find(item => item.audio && item.audio.length > 0);
-        currentAudioUrl = audioObj ? audioObj.audio : '';
-    } else {
-        currentAudioUrl = '';
-    }
-
-    // This ensures the button appears for every word searched!
-    audioBtn.classList.remove('hidden');
 }
-            
 
-            // Definitions
-            definitionsList.innerHTML = '';
-            if (entry && entry.meanings && entry.meanings.length) {
-                entry.meanings.forEach(meaning => {
-                    const pos = meaning.partOfSpeech;
-                    meaning.definitions.slice(0, 2).forEach(def => {
-                        const div = document.createElement('div');
-                        div.className = 'bg-slate-900/50 p-3 rounded-lg border border-slate-700/40';
-                        div.innerHTML = `<span class="text-xs font-semibold uppercase text-indigo-400 tracking-wider">${pos}</span>
-                                         <p class="text-slate-200 mt-1">${def.definition}</p>`;
-                        definitionsList.appendChild(div);
-                    });
-                });
-            } else {
-                definitionsList.innerHTML = '<p class="text-slate-400 text-sm">No definition available.</p>';
-            }
+function displayResults(word, entry, syns, ants) {
+    wordTitle.textContent = word;
 
-            // Synonyms Pill List
-            synonymsList.innerHTML = '';
-            let allSynonyms = [];
-            if (entry && entry.meanings) {
-                entry.meanings.forEach(m => { if (m.synonyms) allSynonyms.push(...m.synonyms); });
-            }
-            if (syns && syns.length) {
-                allSynonyms.push(...syns.map(item => item.word));
-            }
-            allSynonyms = [...new Set(allSynonyms)].slice(0, 12);
+    // Phonetics & Audio Setup
+    phoneticText.textContent = '';
+    currentAudioUrl = '';
 
-            if (allSynonyms.length) {
-                allSynonyms.forEach(syn => {
-                    const pill = document.createElement('button');
-                    pill.className = 'px-3 py-1 bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 rounded-full text-sm hover:bg-emerald-500/20 transition';
-                    pill.textContent = syn;
-                    pill.onclick = () => { searchInput.value = syn; performSearch(syn); };
-                    synonymsList.appendChild(pill);
-                });
-            } else {
-                synonymsList.innerHTML = '<p class="text-slate-400 text-sm">No synonyms found.</p>';
-            }
-
-            // Antonyms Pill List
-            antonymsList.innerHTML = '';
-            let allAntonyms = [];
-            if (entry && entry.meanings) {
-                entry.meanings.forEach(m => { if (m.antonyms) allAntonyms.push(...m.antonyms); });
-            }
-            if (ants && ants.length) {
-                allAntonyms.push(...ants.map(item => item.word));
-            }
-            allAntonyms = [...new Set(allAntonyms)].slice(0, 12);
-
-            if (allAntonyms.length) {
-                allAntonyms.forEach(ant => {
-                    const pill = document.createElement('button');
-                    pill.className = 'px-3 py-1 bg-rose-500/10 text-rose-300 border border-rose-500/30 rounded-full text-sm hover:bg-rose-500/20 transition';
-                    pill.textContent = ant;
-                    pill.onclick = () => { searchInput.value = ant; performSearch(ant); };
-                    antonymsList.appendChild(pill);
-                });
-            } else {
-                antonymsList.innerHTML = '<p class="text-slate-400 text-sm">No antonyms found.</p>';
-            }
+    if (entry) {
+        if (entry.phonetic) {
+            phoneticText.textContent = entry.phonetic;
+        } else if (entry.phonetics && entry.phonetics.length) {
+            const p = entry.phonetics.find(item => item.text);
+            if (p) phoneticText.textContent = p.text;
         }
 
-        audioBtn.addEventListener('click', () => {
-            if (currentAudioUrl) {
-                const audio = new Audio(currentAudioUrl);
-                audio.play();
-            } else {
-                const text = wordTitle.textContent;
-                if ('speechSynthesis' in window) {
-                    const utterance = new SpeechSynthesisUtterance(text);
-                    window.speechSynthesis.speak(utterance);
-                }
+        if (entry.phonetics && entry.phonetics.length) {
+            const audioObj = entry.phonetics.find(item => item.audio && item.audio.length > 0);
+            if (audioObj) {
+                currentAudioUrl = audioObj.audio;
             }
+        }
+    }
+
+    // Always keep the Listen button visible on laptops & mobile
+    audioBtn.classList.remove('hidden');
+
+    // Definitions
+    definitionsList.innerHTML = '';
+    if (entry && entry.meanings && entry.meanings.length) {
+        entry.meanings.forEach(meaning => {
+            const pos = meaning.partOfSpeech;
+            meaning.definitions.slice(0, 2).forEach(def => {
+                const div = document.createElement('div');
+                div.className = 'bg-slate-900/50 p-3 rounded-lg border border-slate-700/40';
+                div.innerHTML = `<span class="text-xs font-semibold uppercase text-indigo-400 tracking-wider">${pos}</span>
+                                 <p class="text-slate-200 mt-1">${def.definition}</p>`;
+                definitionsList.appendChild(div);
+            });
         });
+    } else {
+        definitionsList.innerHTML = '<p class="text-slate-400 text-sm">No definition available.</p>';
+    }
+
+    // Synonyms List
+    synonymsList.innerHTML = '';
+    let allSynonyms = [];
+    if (entry && entry.meanings) {
+        entry.meanings.forEach(m => { if (m.synonyms) allSynonyms.push(...m.synonyms); });
+    }
+    if (syns && syns.length) {
+        allSynonyms.push(...syns.map(item => item.word));
+    }
+    allSynonyms = [...new Set(allSynonyms)].slice(0, 12);
+
+    if (allSynonyms.length) {
+        allSynonyms.forEach(syn => {
+            const pill = document.createElement('button');
+            pill.className = 'px-3 py-1 bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 rounded-full text-sm hover:bg-emerald-500/20 transition';
+            pill.textContent = syn;
+            pill.onclick = () => { searchInput.value = syn; performSearch(syn); };
+            synonymsList.appendChild(pill);
+        });
+    } else {
+        synonymsList.innerHTML = '<p class="text-slate-400 text-sm">No synonyms found.</p>';
+    }
+
+    // Antonyms List
+    antonymsList.innerHTML = '';
+    let allAntonyms = [];
+    if (entry && entry.meanings) {
+        entry.meanings.forEach(m => { if (m.antonyms) allAntonyms.push(...m.antonyms); });
+    }
+    if (ants && ants.length) {
+        allAntonyms.push(...ants.map(item => item.word));
+    }
+    allAntonyms = [...new Set(allAntonyms)].slice(0, 12);
+
+    if (allAntonyms.length) {
+        allAntonyms.forEach(ant => {
+            const pill = document.createElement('button');
+            pill.className = 'px-3 py-1 bg-rose-500/10 text-rose-300 border border-rose-500/30 rounded-full text-sm hover:bg-rose-500/20 transition';
+            pill.textContent = ant;
+            pill.onclick = () => { searchInput.value = ant; performSearch(ant); };
+            antonymsList.appendChild(pill);
+        });
+    } else {
+        antonymsList.innerHTML = '<p class="text-slate-400 text-sm">No antonyms found.</p>';
+    }
+}
+
+// Universal Audio Handler for Laptop & Mobile
+audioBtn.addEventListener('click', () => {
+    const text = wordTitle.textContent;
+
+    if (currentAudioUrl) {
+        const audio = new Audio(currentAudioUrl);
+        audio.play().catch(err => {
+            console.warn('Audio URL playback failed, using system speech synthesizer instead:', err);
+            speakSystemVoice(text);
+        });
+    } else {
+        speakSystemVoice(text);
+    }
+});
+
+function speakSystemVoice(text) {
+    if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel(); // Clear queued speech
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.rate = 0.9;
+        window.speechSynthesis.speak(utterance);
+    } else {
+        alert('Sorry, your browser does not support audio speech synthesis.');
+    }
+        }
+    
+
     </script>
 </body>
 </html>
