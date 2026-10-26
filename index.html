@@ -160,23 +160,26 @@
             phoneticText.textContent = '';
             audioBtn.classList.add('hidden');
             currentAudioUrl = '';
+if (entry) {
+    if (entry.phonetic) {
+        phoneticText.textContent = entry.phonetic;
+    } else if (entry.phonetics && entry.phonetics.length) {
+        const p = entry.phonetics.find(item => item.text);
+        if (p) phoneticText.textContent = p.text;
+    }
 
-            if (entry) {
-                if (entry.phonetic) {
-                    phoneticText.textContent = entry.phonetic;
-                } else if (entry.phonetics && entry.phonetics.length) {
-                    const p = entry.phonetics.find(item => item.text);
-                    if (p) phoneticText.textContent = p.text;
-                }
+    // Look for a recorded audio file, but always show the Listen button
+    if (entry.phonetics && entry.phonetics.length) {
+        const audioObj = entry.phonetics.find(item => item.audio && item.audio.length > 0);
+        currentAudioUrl = audioObj ? audioObj.audio : '';
+    } else {
+        currentAudioUrl = '';
+    }
 
-                if (entry.phonetics && entry.phonetics.length) {
-                    const audioObj = entry.phonetics.find(item => item.audio && item.audio.length > 0);
-                    if (audioObj) {
-                        currentAudioUrl = audioObj.audio;
-                        audioBtn.classList.remove('hidden');
-                    }
-                }
-            }
+    // This ensures the button appears for every word searched!
+    audioBtn.classList.remove('hidden');
+}
+            
 
             // Definitions
             definitionsList.innerHTML = '';
