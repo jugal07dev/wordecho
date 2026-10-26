@@ -37,7 +37,7 @@
                 <button 
                     type="submit" 
                     id="searchBtn" 
-                    class="absolute right-2 bg-indigo-600 hover:bg-indigo-500 text-white p-3 rounded-lg transition-all"
+                    class="absolute right-2 bg-indigo-600 hover:bg-indigo-500 text-white p-3 rounded-lg transition-all cursor-pointer"
                 >
                     <i data-lucide="search" class="w-5 h-5"></i>
                 </button>
@@ -57,7 +57,7 @@
                         <h1 id="wordTitle" class="text-4xl font-extrabold capitalize text-white mb-1"></h1>
                         <p id="phoneticText" class="text-indigo-400 text-lg font-mono"></p>
                     </div>
-                    <button id="audioBtn" class="flex items-center space-x-2 bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 px-4 py-2 rounded-xl transition">
+                    <button id="audioBtn" class="flex items-center space-x-2 bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 px-4 py-2 rounded-xl transition cursor-pointer">
                         <i data-lucide="volume-2" class="w-5 h-5"></i>
                         <span>Listen</span>
                     </button>
@@ -114,7 +114,7 @@
         const synonymsList = document.getElementById('synonymsList');
         const antonymsList = document.getElementById('antonymsList');
 
-        let currentAudioUrl = '';
+        let searchedWord = ''; // Tracks the exact searched word safely
         let currentUtterance = null;
 
         searchForm.addEventListener('submit', (e) => {
@@ -124,6 +124,7 @@
         });
 
         async function performSearch(word) {
+            searchedWord = word; // Store current search target
             statusMessage.classList.remove('hidden');
             statusMessage.innerHTML = 'Searching dictionary...';
             resultContainer.classList.add('hidden');
@@ -156,9 +157,7 @@
 
         function displayResults(word, entry, syns, ants) {
             wordTitle.textContent = word;
-
             phoneticText.textContent = '';
-            currentAudioUrl = '';
 
             if (entry) {
                 if (entry.phonetic) {
@@ -166,13 +165,6 @@
                 } else if (entry.phonetics && entry.phonetics.length) {
                     const p = entry.phonetics.find(item => item.text);
                     if (p) phoneticText.textContent = p.text;
-                }
-
-                if (entry.phonetics && entry.phonetics.length) {
-                    const audioObj = entry.phonetics.find(item => item.audio && item.audio.length > 0);
-                    if (audioObj) {
-                        currentAudioUrl = audioObj.audio;
-                    }
                 }
             }
 
@@ -207,7 +199,7 @@
             if (allSynonyms.length) {
                 allSynonyms.forEach(syn => {
                     const pill = document.createElement('button');
-                    pill.className = 'px-3 py-1 bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 rounded-full text-sm hover:bg-emerald-500/20 transition';
+                    pill.className = 'px-3 py-1 bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 rounded-full text-sm hover:bg-emerald-500/20 transition cursor-pointer';
                     pill.textContent = syn;
                     pill.onclick = () => { searchInput.value = syn; performSearch(syn); };
                     synonymsList.appendChild(pill);
@@ -230,7 +222,7 @@
             if (allAntonyms.length) {
                 allAntonyms.forEach(ant => {
                     const pill = document.createElement('button');
-                    pill.className = 'px-3 py-1 bg-rose-500/10 text-rose-300 border border-rose-500/30 rounded-full text-sm hover:bg-rose-500/20 transition';
+                    pill.className = 'px-3 py-1 bg-rose-500/10 text-rose-300 border border-rose-500/30 rounded-full text-sm hover:bg-rose-500/20 transition cursor-pointer';
                     pill.textContent = ant;
                     pill.onclick = () => { searchInput.value = ant; performSearch(ant); };
                     antonymsList.appendChild(pill);
@@ -240,26 +232,16 @@
             }
         }
 
+        // Guaranteed speech reader using the exact searched word variable
         audioBtn.addEventListener('click', () => {
-            const text = wordTitle.textContent;
-            if (currentAudioUrl) {
-                const audio = new Audio(currentAudioUrl);
-                audio.play().catch(() => {
-                    speakSystemVoice(text);
-                });
-            } else {
-                speakSystemVoice(text);
-            }
-        });
-
-        function speakSystemVoice(text) {
-            if ('speechSynthesis' in window) {
+            if (searchedWord && 'speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
-                currentUtterance = new SpeechSynthesisUtterance(text);
+                currentUtterance = new SpeechSynthesisUtterance(searchedWord);
                 currentUtterance.rate = 0.9;
                 window.speechSynthesis.speak(currentUtterance);
             }
-        }
+        });
     </script>
 </body>
-</html>
+                        </html>
+                        
