@@ -1,259 +1,94 @@
-
 <!DOCTYPE html>
-<html lang="en" class="h-full">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WordEcho - Interactive Vocabulary & Synonym Finder</title>
-    <!-- Tailwind CSS CDN -->
+    <title>WordEcho — Interactive Vocabulary & Thesaurus Explorer</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Font Awesome Icons CDN -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
-                    },
-                    colors: {
-                        brand: {
-                            50: '#f4f4fe',
-                            100: '#e6e6fd',
-                            500: '#6366f1',
-                            600: '#4f46e5',
-                            700: '#4338ca',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        .glass-card {
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(226, 232, 240, 0.8);
-        }
-        .dark .glass-card {
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(51, 65, 85, 0.5);
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in {
-            animation: fadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-        }
-    </style>
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
-<body class="bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 font-sans min-h-full flex flex-col transition-colors duration-200">
+<body class="bg-slate-900 text-slate-100 min-h-screen font-sans flex flex-col">
 
-    <!-- Toast Notification -->
-    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 pointer-events-none flex items-center gap-2 bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 px-4 py-3 rounded-xl shadow-2xl border border-slate-700 dark:border-slate-200 font-medium text-sm">
-        <i class="fa-solid fa-circle-check text-indigo-400 dark:text-indigo-600 text-base"></i>
-        <span id="toast-message">Copied to clipboard!</span>
-    </div>
-
-    <!-- Navigation Header -->
-    <header class="sticky top-0 z-40 border-b border-slate-200/80 dark:border-slate-800/80 bg-white/70 dark:bg-slate-950/70 backdrop-blur-md">
-        <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-            <div class="flex items-center gap-3 cursor-pointer" onclick="resetToHome()">
-                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-indigo-600 to-purple-500 flex items-center justify-center text-white shadow-md shadow-indigo-500/20">
-                    <i class="fa-solid fa-wave-square text-xl"></i>
-                </div>
-                <div>
-                    <h1 class="font-extrabold text-xl tracking-tight bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">WordEcho</h1>
-                </div>
+    <!-- Header -->
+    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <i data-lucide="waves" class="w-8 h-8 text-indigo-400"></i>
+                <span class="text-xl font-bold bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">WordEcho</span>
             </div>
-
-            <div class="flex items-center gap-3">
-                <button id="theme-toggle" class="p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 dark:text-slate-400 transition-colors" title="Toggle Theme">
-                    <i class="fa-solid fa-moon dark:hidden text-lg"></i>
-                    <i class="fa-solid fa-sun hidden dark:block text-lg"></i>
-                </button>
-            </div>
+            <span class="text-xs text-slate-400 border border-slate-700 rounded-full px-3 py-1">v1.0</span>
         </div>
     </header>
 
-    <main class="flex-1 max-w-6xl w-full mx-auto px-4 sm:px-6 py-8 flex flex-col gap-8">
-        
-        <!-- Search Section -->
-        <section class="max-w-2xl mx-auto w-full text-center space-y-6 pt-4">
-            <div class="space-y-2">
-                <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-white">
-                    Discover Words That Resonate
-                </h2>
-                <p class="text-slate-500 dark:text-slate-400 text-sm sm:text-base">
-                    Explore synonyms, antonyms, pronunciations, and definitions instantly.
-                </p>
+    <!-- Main Content -->
+    <main class="flex-grow max-w-4xl w-full mx-auto px-4 py-8">
+
+        <!-- Search Form -->
+        <form id="searchForm" class="mb-8">
+            <div class="relative flex items-center">
+                <input 
+                    type="text" 
+                    id="searchInput" 
+                    placeholder="Search any word (e.g., happy, inspire)..." 
+                    required 
+                    autocomplete="off"
+                    class="w-full bg-slate-800/90 border border-slate-700 text-white placeholder-slate-400 rounded-xl py-4 pl-5 pr-14 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg shadow-lg"
+                >
+                <button 
+                    type="submit" 
+                    id="searchBtn" 
+                    class="absolute right-2 bg-indigo-600 hover:bg-indigo-500 text-white p-3 rounded-lg transition-all"
+                >
+                    <i data-lucide="search" class="w-5 h-5"></i>
+                </button>
             </div>
+        </form>
 
-            <!-- Search Form -->
-            <form id="search-form" class="relative group">
-                <div class="relative flex items-center">
-                    <input 
-                        type="text" 
-                        id="search-input" 
-                        placeholder="Type any word (e.g., 'candid', 'resilient', 'vibrant')..." 
-                        autocomplete="off" 
-                        required
-                        class="w-full pl-12 pr-28 py-4 text-base sm:text-lg rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-xl shadow-slate-200/50 dark:shadow-none focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500"
-                    >
-                    <div class="absolute left-4 text-slate-400 group-focus-within:text-indigo-500 transition-colors">
-                        <i class="fa-solid fa-magnifying-glass text-lg"></i>
-                    </div>
-                    <div class="absolute right-2 flex items-center gap-1">
-                        <button 
-                            type="button" 
-                            id="clear-btn" 
-                            class="hidden p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-lg"
-                            title="Clear input"
-                        >
-                            <i class="fa-solid fa-xmark text-lg"></i>
-                        </button>
-                        <button 
-                            type="submit" 
-                            class="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-xl shadow-md shadow-indigo-500/20 active:scale-95 transition-all text-sm flex items-center gap-2"
-                        >
-                            <span>Search</span>
-                        </button>
-                    </div>
-                </div>
-            </form>
+        <!-- Status Message -->
+        <div id="statusMessage" class="hidden text-center py-6 text-slate-400 text-lg"></div>
 
-            <!-- Quick Suggestions -->
-            <div class="flex items-center justify-center flex-wrap gap-2 text-xs sm:text-sm text-slate-500">
-                <span class="font-medium text-slate-400">Try searching:</span>
-                <button class="quick-word px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors">resilient</button>
-                <button class="quick-word px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors">ambitious</button>
-                <button class="quick-word px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors">vibrant</button>
-                <button class="quick-word px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 transition-colors">gloomy</button>
-            </div>
-
-            <!-- Recent Searches History -->
-            <div id="history-container" class="hidden flex-wrap items-center justify-center gap-2 pt-2 border-t border-slate-200/60 dark:border-slate-800/60">
-                <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 flex items-center gap-1">
-                    <i class="fa-solid fa-clock-rotate-left"></i> History:
-                </span>
-                <div id="history-tags" class="flex flex-wrap gap-1.5 justify-center"></div>
-                <button id="clear-history" class="text-xs text-rose-500 hover:text-rose-600 font-medium ml-2 underline underline-offset-2">Clear</button>
-            </div>
-        </section>
-
-        <!-- Loading State -->
-        <div id="loading-state" class="hidden flex-col items-center justify-center py-16 gap-4">
-            <div class="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
-            <p class="text-slate-500 dark:text-slate-400 font-medium animate-pulse">Querying WordEcho databases...</p>
-        </div>
-
-        <!-- Error State -->
-        <div id="error-state" class="hidden max-w-lg mx-auto w-full glass-card p-8 rounded-2xl text-center space-y-4">
-            <div class="w-16 h-16 bg-rose-100 dark:bg-rose-950/50 text-rose-500 rounded-2xl flex items-center justify-center mx-auto text-2xl">
-                <i class="fa-solid fa-triangle-exclamation"></i>
-            </div>
-            <div>
-                <h3 id="error-title" class="text-lg font-bold text-slate-900 dark:text-white">Word Not Found</h3>
-                <p id="error-desc" class="text-slate-500 dark:text-slate-400 text-sm mt-1">We couldn't find matches for this query. Please check your spelling or try another word.</p>
-            </div>
-        </div>
-
-        <!-- Content Display Area -->
-        <div id="results-area" class="hidden space-y-8 animate-fade-in">
+        <!-- Result Container -->
+        <div id="resultContainer" class="hidden space-y-6">
             
-            <!-- Main Word Header Banner -->
-            <div class="glass-card p-6 sm:p-8 rounded-3xl shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-6 border border-slate-200/80 dark:border-slate-800">
-                <div class="space-y-2">
-                    <div class="flex items-center gap-3">
-                        <h2 id="word-title" class="text-3xl sm:text-5xl font-black capitalize tracking-tight text-slate-900 dark:text-white">---</h2>
-                        <button id="audio-btn" class="p-3 bg-indigo-50 dark:bg-slate-800 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-100 dark:hover:bg-slate-700 rounded-2xl transition-all" title="Listen Pronunciation">
-                            <i class="fa-solid fa-volume-high text-xl"></i>
-                        </button>
+            <!-- Word Header Card -->
+            <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 backdrop-blur">
+                <div class="flex items-start justify-between flex-wrap gap-4">
+                    <div>
+                        <h1 id="wordTitle" class="text-4xl font-extrabold capitalize text-white mb-1"></h1>
+                        <p id="phoneticText" class="text-indigo-400 text-lg font-mono"></p>
                     </div>
-                    <div class="flex items-center gap-3 text-slate-500 dark:text-slate-400 font-medium">
-                        <span id="phonetic-text" class="text-lg font-mono"></span>
-                        <span id="parts-of-speech-badges" class="flex gap-2"></span>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2 border-t sm:border-t-0 pt-4 sm:pt-0 border-slate-200 dark:border-slate-800">
-                    <button id="copy-main-btn" class="flex-1 sm:flex-none px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 font-semibold text-sm flex items-center justify-center gap-2 transition-colors">
-                        <i class="fa-regular fa-copy"></i>
-                        <span>Copy Word</span>
+                    <button id="audioBtn" class="hidden flex items-center space-x-2 bg-indigo-600/20 hover:bg-indigo-600/40 text-indigo-300 border border-indigo-500/30 px-4 py-2 rounded-xl transition">
+                        <i data-lucide="volume-2" class="w-5 h-5"></i>
+                        <span>Listen</span>
                     </button>
                 </div>
             </div>
 
-            <!-- Main Content Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                
-                <!-- Synonyms Column -->
-                <div class="glass-card rounded-3xl p-6 sm:p-8 flex flex-col h-full border border-slate-200/80 dark:border-slate-800 shadow-sm">
-                    <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800 mb-6">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
-                                <i class="fa-solid fa-layer-group"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Synonyms</h3>
-                                <p class="text-xs text-slate-500">Words with similar meanings</p>
-                            </div>
-                        </div>
-                        <span id="synonym-count" class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300">0 found</span>
-                    </div>
-
-                    <div id="synonyms-list" class="flex flex-wrap gap-2.5 content-start flex-1">
-                    </div>
-                    <div id="synonyms-empty" class="hidden py-8 text-center text-slate-400 text-sm italic">
-                        No direct synonyms found for this word.
-                    </div>
-                </div>
-
-                <!-- Antonyms Column -->
-                <div class="glass-card rounded-3xl p-6 sm:p-8 flex flex-col h-full border border-slate-200/80 dark:border-slate-800 shadow-sm">
-                    <div class="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800 mb-6">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-950/60 text-rose-600 dark:text-rose-400 flex items-center justify-center font-bold">
-                                <i class="fa-solid fa-right-left"></i>
-                            </div>
-                            <div>
-                                <h3 class="text-xl font-bold text-slate-900 dark:text-white">Antonyms</h3>
-                                <p class="text-xs text-slate-500">Words with opposite meanings</p>
-                            </div>
-                        </div>
-                        <span id="antonym-count" class="px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 dark:bg-rose-950/40 text-rose-700 dark:text-rose-300">0 found</span>
-                    </div>
-
-                    <div id="antonyms-list" class="flex flex-wrap gap-2.5 content-start flex-1">
-                    </div>
-                    <div id="antonyms-empty" class="hidden py-8 text-center text-slate-400 text-sm italic">
-                        No direct antonyms found for this word.
-                    </div>
-                </div>
-
+            <!-- Definitions -->
+            <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 backdrop-blur">
+                <h2 class="text-xl font-bold text-white mb-4 flex items-center space-x-2">
+                    <i data-lucide="book-open" class="w-5 h-5 text-indigo-400"></i>
+                    <span>Definitions</span>
+                </h2>
+                <div id="definitionsList" class="space-y-4"></div>
             </div>
 
-            <!-- Definitions & Context Section -->
-            <div class="glass-card rounded-3xl p-6 sm:p-8 border border-slate-200/80 dark:border-slate-800 shadow-sm space-y-6">
-                <div class="flex items-center gap-3 pb-4 border-b border-slate-200 dark:border-slate-800">
-                    <div class="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 flex items-center justify-center font-bold">
-                        <i class="fa-solid fa-book-open"></i>
-                    </div>
-                    <div>
-                        <h3 class="text-xl font-bold text-slate-900 dark:text-white">Definitions & Context</h3>
-                        <p class="text-xs text-slate-500">Detailed meanings and usage examples</p>
-                    </div>
-                </div>
+            <!-- Synonyms -->
+            <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 backdrop-blur">
+                <h2 class="text-xl font-bold text-white mb-4 flex items-center space-x-2">
+                    <i data-lucide="copy" class="w-5 h-5 text-emerald-400"></i>
+                    <span>Synonyms</span>
+                </h2>
+                <div id="synonymsList" class="flex flex-wrap gap-2"></div>
+            </div>
 
-                <div id="definitions-container" class="space-y-6">
-                </div>
+            <!-- Antonyms -->
+            <div class="bg-slate-800/60 border border-slate-700/60 rounded-2xl p-6 backdrop-blur">
+                <h2 class="text-xl font-bold text-white mb-4 flex items-center space-x-2">
+                    <i data-lucide="git-compare" class="w-5 h-5 text-rose-400"></i>
+                    <span>Antonyms</span>
+                </h2>
+                <div id="antonymsList" class="flex flex-wrap gap-2"></div>
             </div>
 
         </div>
@@ -261,97 +96,164 @@
     </main>
 
     <!-- Footer -->
-    <footer class="mt-auto border-t border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-950/50 py-6 text-center text-xs text-slate-500">
-        <p>WordEcho &bull; Powered by Open Datamuse & Free Dictionary APIs</p>
+    <footer class="border-t border-slate-800 py-6 text-center text-xs text-slate-500">
+        <p>WordEcho — Project by Jugal Chettri (24SV0019) & Simran Rai (24SV0005)</p>
     </footer>
 
-    <!-- Application Script -->
     <script>
-        let searchHistory = JSON.parse(localStorage.getItem('wordecho_history') || '[]');
-        let currentWordData = null;
+        lucide.createIcons();
 
-        const searchForm = document.getElementById('search-form');
-        const searchInput = document.getElementById('search-input');
-        const clearBtn = document.getElementById('clear-btn');
-        const loadingState = document.getElementById('loading-state');
-        const errorState = document.getElementById('error-state');
-        const resultsArea = document.getElementById('results-area');
-        const historyContainer = document.getElementById('history-container');
-        const historyTags = document.getElementById('history-tags');
-        const clearHistoryBtn = document.getElementById('clear-history');
-        const themeToggle = document.getElementById('theme-toggle');
+        const searchForm = document.getElementById('searchForm');
+        const searchInput = document.getElementById('searchInput');
+        const statusMessage = document.getElementById('statusMessage');
+        const resultContainer = document.getElementById('resultContainer');
+        const wordTitle = document.getElementById('wordTitle');
+        const phoneticText = document.getElementById('phoneticText');
+        const audioBtn = document.getElementById('audioBtn');
+        const definitionsList = document.getElementById('definitionsList');
+        const synonymsList = document.getElementById('synonymsList');
+        const antonymsList = document.getElementById('antonymsList');
 
-        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-
-        themeToggle.addEventListener('click', () => {
-            document.documentElement.classList.toggle('dark');
-            localStorage.theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-        });
-
-        updateHistoryUI();
-
-        searchInput.addEventListener('input', () => {
-            clearBtn.classList.toggle('hidden', searchInput.value.length === 0);
-        });
-
-        clearBtn.addEventListener('click', () => {
-            searchInput.value = '';
-            clearBtn.classList.add('hidden');
-            searchInput.focus();
-        });
-
-        document.querySelectorAll('.quick-word').forEach(btn => {
-            btn.addEventListener('click', () => {
-                searchInput.value = btn.innerText;
-                clearBtn.classList.remove('hidden');
-                performSearch(btn.innerText);
-            });
-        });
+        let currentAudioUrl = '';
 
         searchForm.addEventListener('submit', (e) => {
             e.preventDefault();
-            const query = searchInput.value.trim();
+            const query = searchInput.value.trim().toLowerCase();
             if (query) performSearch(query);
         });
 
         async function performSearch(word) {
-            word = word.toLowerCase().trim();
-            showLoading();
-
+            statusMessage.classList.remove('hidden');
+            statusMessage.innerHTML = 'Searching dictionary...';
+            resultContainer.classList.add('hidden');
+            
             try {
                 const [dictRes, synRes, antRes] = await Promise.all([
-                    fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`).catch(() => null),
-                    fetch(`https://api.datamuse.com/words?rel_syn=${encodeURIComponent(word)}&max=30`).then(r => r.json()).catch(() => []),
-                    fetch(`https://api.datamuse.com/words?rel_ant=${encodeURIComponent(word)}&max=30`).then(r => r.json()).catch(() => [])
+                    fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${encodeURIComponent(word)}`),
+                    fetch(`https://api.datamuse.com/words?rel_syn=${encodeURIComponent(word)}`),
+                    fetch(`https://api.datamuse.com/words?rel_ant=${encodeURIComponent(word)}`)
                 ]);
 
-                let dictData = null;
-                if (dictRes && dictRes.ok) {
-                    dictData = await dictRes.json();
+                const dictData = dictRes.ok ? await dictRes.json() : null;
+                const synData = synRes.ok ? await synRes.json() : [];
+                const antData = antRes.ok ? await antRes.json() : [];
+
+                if (!dictData && synData.length === 0 && antData.length === 0) {
+                    statusMessage.innerHTML = `No results found for "<strong>${word}</strong>". Please try another word.`;
+                    return;
                 }
 
-                let synonyms = new Set(synRes.map(item => item.word));
-                let antonyms = new Set(antRes.map(item => item.word));
-                let definitions = [];
-                let phonetics = '';
+                displayResults(word, dictData ? dictData[0] : null, synData, antData);
+                statusMessage.classList.add('hidden');
+                resultContainer.classList.remove('hidden');
 
-                if (dictData && dictData.length > 0) {
-                    const entry = dictData[0];
-                    phonetics = entry.phonetic || (entry.phonetics && entry.phonetics.find(p => p.text)?.text) || '';
+            } catch (err) {
+                statusMessage.innerHTML = 'Error loading results. Please check your internet connection.';
+                console.error(err);
+            }
+        }
 
-                    entry.meanings.forEach(m => {
-                        m.definitions.forEach(d => {
-                            definitions.push({
-                                partOfSpeech: m.partOfSpeech,
-                                definition: d.definition,
-                                example: d.example || null
-                            });
-                            if (d.synonyms) d.synonyms.forEach(s => synonyms.add(s));
-                            if (d.antonyms) d.antonyms.forEach(a => antonyms.add(a));
-                        });
-                        if (m.synonyms) m.synonyms.forEach(s => synonyms.add(s));
-               
+        function displayResults(word, entry, syns, ants) {
+            wordTitle.textContent = word;
+
+            // Phonetics & Audio
+            phoneticText.textContent = '';
+            audioBtn.classList.add('hidden');
+            currentAudioUrl = '';
+
+            if (entry) {
+                if (entry.phonetic) {
+                    phoneticText.textContent = entry.phonetic;
+                } else if (entry.phonetics && entry.phonetics.length) {
+                    const p = entry.phonetics.find(item => item.text);
+                    if (p) phoneticText.textContent = p.text;
+                }
+
+                if (entry.phonetics && entry.phonetics.length) {
+                    const audioObj = entry.phonetics.find(item => item.audio && item.audio.length > 0);
+                    if (audioObj) {
+                        currentAudioUrl = audioObj.audio;
+                        audioBtn.classList.remove('hidden');
+                    }
+                }
+            }
+
+            // Definitions
+            definitionsList.innerHTML = '';
+            if (entry && entry.meanings && entry.meanings.length) {
+                entry.meanings.forEach(meaning => {
+                    const pos = meaning.partOfSpeech;
+                    meaning.definitions.slice(0, 2).forEach(def => {
+                        const div = document.createElement('div');
+                        div.className = 'bg-slate-900/50 p-3 rounded-lg border border-slate-700/40';
+                        div.innerHTML = `<span class="text-xs font-semibold uppercase text-indigo-400 tracking-wider">${pos}</span>
+                                         <p class="text-slate-200 mt-1">${def.definition}</p>`;
+                        definitionsList.appendChild(div);
+                    });
+                });
+            } else {
+                definitionsList.innerHTML = '<p class="text-slate-400 text-sm">No definition available.</p>';
+            }
+
+            // Synonyms Pill List
+            synonymsList.innerHTML = '';
+            let allSynonyms = [];
+            if (entry && entry.meanings) {
+                entry.meanings.forEach(m => { if (m.synonyms) allSynonyms.push(...m.synonyms); });
+            }
+            if (syns && syns.length) {
+                allSynonyms.push(...syns.map(item => item.word));
+            }
+            allSynonyms = [...new Set(allSynonyms)].slice(0, 12);
+
+            if (allSynonyms.length) {
+                allSynonyms.forEach(syn => {
+                    const pill = document.createElement('button');
+                    pill.className = 'px-3 py-1 bg-emerald-500/10 text-emerald-300 border border-emerald-500/30 rounded-full text-sm hover:bg-emerald-500/20 transition';
+                    pill.textContent = syn;
+                    pill.onclick = () => { searchInput.value = syn; performSearch(syn); };
+                    synonymsList.appendChild(pill);
+                });
+            } else {
+                synonymsList.innerHTML = '<p class="text-slate-400 text-sm">No synonyms found.</p>';
+            }
+
+            // Antonyms Pill List
+            antonymsList.innerHTML = '';
+            let allAntonyms = [];
+            if (entry && entry.meanings) {
+                entry.meanings.forEach(m => { if (m.antonyms) allAntonyms.push(...m.antonyms); });
+            }
+            if (ants && ants.length) {
+                allAntonyms.push(...ants.map(item => item.word));
+            }
+            allAntonyms = [...new Set(allAntonyms)].slice(0, 12);
+
+            if (allAntonyms.length) {
+                allAntonyms.forEach(ant => {
+                    const pill = document.createElement('button');
+                    pill.className = 'px-3 py-1 bg-rose-500/10 text-rose-300 border border-rose-500/30 rounded-full text-sm hover:bg-rose-500/20 transition';
+                    pill.textContent = ant;
+                    pill.onclick = () => { searchInput.value = ant; performSearch(ant); };
+                    antonymsList.appendChild(pill);
+                });
+            } else {
+                antonymsList.innerHTML = '<p class="text-slate-400 text-sm">No antonyms found.</p>';
+            }
+        }
+
+        audioBtn.addEventListener('click', () => {
+            if (currentAudioUrl) {
+                const audio = new Audio(currentAudioUrl);
+                audio.play();
+            } else {
+                const text = wordTitle.textContent;
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    window.speechSynthesis.speak(utterance);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
