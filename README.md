@@ -1,95 +1,60 @@
-# 📚 WordEcho — Interactive Vocabulary & Thesaurus Explorer
+# 📚 Synonyms & Antonym Finder — Interactive Vocabulary & Dictionary Explorer
 
-**WordEcho** is a modern, responsive single-page web application designed for students, writers, and language enthusiasts to explore English vocabulary effortlessly. Built with modern web standards, WordEcho provides comprehensive definitions, phonetics, audio pronunciations, usage examples, and navigable synonyms and antonyms—all within an intuitive glassmorphism interface.
-
----
+Synonyms & Antonym Finder is a modern, responsive, and interactive web application designed to help users explore English vocabulary effortlessly[span_0](start_span)[span_0](end_span). Powered by the free **Free Dictionary API**, Synonyms & Antonym Finder provides comprehensive word definitions, phonetics, audio pronunciations, contextual usage examples, and navigable synonyms and antonyms—all within an intuitive and elegant single-page user interface[span_1](start_span)[span_1](end_span).
 
 ## ✨ Features
 
-- 🔍 **Real-Time Word Lookup:** Search any English word to view rich definitions categorized by part of speech (noun, verb, adjective, adverb).
-- 🔊 **Audio Pronunciation:** Listen to spoken pronunciations powered by native Web Speech API synthesis with fallback audio playback.
-- 🏷️ **Interactive Tag Navigation:** Click on any green (synonym) or red (antonym) pill to immediately trigger a dynamic search for that term.
-- 🌓 **Dark & Light Mode:** Full thematic switching with smooth CSS transitions, retaining user preferences across sessions.
-- 📜 **Search History:** Tracks recent queries stored locally via browser `localStorage` for fast re-searches.
-- 📱 **Fully Responsive UI:** Built with Tailwind CSS to ensure seamless display on mobile phones, tablets, laptops, and Smart TVs.
-
----
-
-## 👥 Authors & Contributors
-
-This project was developed collaboratively as a two-person team:
-
-* **Jugal Chettri** (Roll No: `24SV0019`) — API Integration, Asynchronous Data Handling & JavaScript Logic
-* **Simran Rai** (Roll No: `24SV0005`) — Frontend UI/UX, Tailwind CSS Styling & Responsive Design
-
----
+- ⚡ **Priority Quick Synonyms & Antonyms:** Search any word to instantly see top-priority quick synonyms and antonyms displayed upfront before full part-of-speech definitions (noun, verb, adjective, adverb)[span_2](start_span)[span_2](end_span).
+- 🔊 **Audio Pronunciation with Web Speech Fallback:** Listen to clear pronunciations using native API audio tracks with automatic Web Speech API synthesis fallback for continuous voice availability[span_3](start_span)[span_3](end_span).
+- 🏷️ **Interactive Synonym & Antonym Badges:** Clickable green (synonym) and red (antonym) pills that immediately trigger a new search for seamless vocabulary exploration[span_4](start_span)[span_4](end_span).
+- 🌓 **Dark & Light Mode Toggle:** Full thematic support for user comfort across day and night sessions[span_5](start_span)[span_5](end_span).
+- 📜 **Search History Tracking:** Quickly access recently searched terms stored locally across sessions[span_6](start_span)[span_6](end_span).
+- 📱 **Fully Responsive UI:** Built using Tailwind CSS, ensuring smooth rendering across mobile devices, tablets, desktop monitors, and Smart TVs[span_7](start_span)[span_7](end_span).
 
 ## 🛠️ Tech Stack & Dependencies
 
-WordEcho is engineered as a zero-dependency, single-file lightweight web application:
+Synonyms & Antonym Finder is engineered as a zero-dependency, single-file lightweight web application[span_8](start_span)[span_8](end_span):
 
-- **Frontend Core:** HTML5, Modern Vanilla JavaScript (ES6+)
-- **Styling & UI:** [Tailwind CSS v3](https://tailwindcss.com/) (loaded via CDN)
-- **Iconography:** [Lucide Icons](https://lucide.dev/)
-- **Data Fetching:** Native Browser `fetch()` API (Asynchronous Promises)
-- **Audio Output:** Web Speech API & HTML5 Audio Interface
-
----
+- **Frontend Core:** HTML5, Modern Vanilla JavaScript (ES6+)[span_9](start_span)[span_9](end_span)
+- **Styling & UI:** [Tailwind CSS v3](https://tailwindcss.com/) (loaded via CDN)[span_10](start_span)[span_10](end_span)
+- **Icons:** [FontAwesome 6.4](https://fontawesome.com/)[span_11](start_span)[span_11](end_span)
+- **API Integration:** Native Browser `fetch()` API[span_12](start_span)[span_12](end_span)
+- **Audio Output:** HTML5 `<audio>` Element & Web Speech API fallback[span_13](start_span)[span_13](end_span)
 
 ## 🌐 API Details
 
-WordEcho combines data asynchronously from two public REST APIs:
+Synonyms & Antonym Finder integrates with the public **Free Dictionary API**[span_14](start_span)[span_14](end_span):
 
-### 1. Free Dictionary API
-- **Purpose:** Fetches definitions, phonetics, parts of speech, and contextual example sentences.
-- **Endpoint:** `https://api.dictionaryapi.dev/api/v2/entries/en/{word}`
-- **HTTP Method:** `GET`
-- **Authentication:** None required
+- **Endpoint URL:** `https://api.dictionaryapi.dev/api/v2/entries/en/{word}`[span_15](start_span)[span_15](end_span)
+- **HTTP Method:** GET[span_16](start_span)[span_16](end_span)
+- **Authentication:** None required (Open & Free)[span_17](start_span)[span_17](end_span)
+- **Response Format:** JSON array containing phonetic transcriptions, audio file URLs, meanings, definitions, example sentences, synonyms, and antonyms[span_18](start_span)[span_18](end_span).
 
-### 2. Datamuse API
-- **Purpose:** Fetches categorized synonym and antonym collections.
-- **Endpoints:** 
-  - Synonyms: `https://api.datamuse.com/words?rel_syn={word}`
-  - Antonyms: `https://api.datamuse.com/words?rel_ant={word}`
-- **HTTP Method:** `GET`
-- **Authentication:** None required
+### Example JSON Payload Structure
 
----
-
-## 🚀 Getting Started & Local Setup
-
-Since WordEcho is built as a portable single-file application (`index.html`), setup requires zero package managers (`npm`/`yarn`) or build compilers.
-
-### Prerequisites
-- Any modern web browser (Google Chrome, Mozilla Firefox, Apple Safari, Microsoft Edge).
-
-### Running Locally
-1. **Clone the repository:**
-   ```bash
-   git clone https://github.com/your-username/wordecho.git
-   cd wordecho
-   ```
-2. **Launch the app:**
-   - Double-click `index.html` to open it directly in your browser.
-   - Or serve it using a simple HTTP server:
-     ```bash
-     # Using Python 3
-     python -m http.server 8000
-     ```
-     Then navigate to `http://localhost:8000` in your web browser.
-
----
-
-## ☁️ Deployment
-
-WordEcho is optimized for fast static deployment:
-
-- **GitHub Pages:** Navigate to **Settings > Pages**, set the Branch to `main` (or `master`), and click **Save**.
-- **Netlify:** Drag and drop the project folder onto [app.netlify.com/drop](https://app.netlify.com/drop).
-- **Vercel:** Import your GitHub repository into Vercel for instant static hosting.
-
----
-
-## 📄 License
-
-This project is open-source and available under the [MIT License](LICENSE).
+```json
+[
+  {
+    "word": "candid",
+    "phonetic": "/ˈkændɪd/",
+    "phonetics": [
+      {
+        "text": "/ˈkændɪd/",
+        "audio": "[https://api.dictionaryapi.dev/media/pronunciations/en/candid-us.mp3](https://api.dictionaryapi.dev/media/pronunciations/en/candid-us.mp3)"
+      }
+    ],
+    "meanings": [
+      {
+        "partOfSpeech": "adjective",
+        "definitions": [
+          {
+            "definition": "Frank; outspoken; open and sincere.",
+            "example": "He gave a candid assessment of the situation."
+          }
+        ],
+        "synonyms": ["honest", "direct", "frank"],
+        "antonyms": ["dishonest", "secretive"]
+      }
+    ]
+  }
+]
